@@ -9,9 +9,11 @@
       background: #0f172a;
       color: #e5e7eb;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      gap: 16px;
     }
     button {
       padding: 12px 20px;
@@ -24,14 +26,27 @@
     button:hover {
       background: #16a34a;
     }
+    #status {
+      font-size: 14px;
+      color: #93c5fd;
+    }
   </style>
 </head>
 <body>
 
-  <button onclick="sendEmail()">Send Test Email</button>
+  <button id="btn" onclick="sendEmail()">Send Test Email</button>
+  <div id="status">Idle</div>
 
   <script>
     async function sendEmail() {
+      const status = document.getElementById("status");
+      const btn = document.getElementById("btn");
+
+      status.innerText = "Sending request...";
+      btn.disabled = true;
+
+      console.log("Sending email request...");
+
       try {
         const response = await fetch(
           "https://emailsender-j8aa.onrender.com/send-email",
@@ -49,19 +64,25 @@
           }
         );
 
+        console.log("Response received");
+
         const data = await response.json();
+        console.log("Response data:", data);
 
         if (!response.ok) {
-          console.error(data);
-          alert("Failed: " + (data.error || "Unknown error"));
+          status.innerText = "Failed: " + (data.error || "Unknown error");
+          btn.disabled = false;
           return;
         }
 
+        status.innerText = "Email sent successfully!";
         alert("Email sent successfully!");
-        console.log(data);
+
       } catch (err) {
-        console.error(err);
-        alert("Request failed. Check console.");
+        console.error("Fetch error:", err);
+        status.innerText = "Request failed. Check console.";
+      } finally {
+        btn.disabled = false;
       }
     }
   </script>
