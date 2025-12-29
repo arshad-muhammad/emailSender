@@ -5,15 +5,12 @@ const cors = require("cors");
 
 const app = express();
 
-/* ✅ CORS MUST COME FIRST */
+/* ✅ Correct CORS setup (NO wildcard route) */
 app.use(cors({
-  origin: "*",              // allow all origins (for testing)
-  methods: ["POST", "GET", "OPTIONS"],
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));
-
-/* ✅ Handle preflight requests */
-app.options("*", cors());
 
 /* Middleware */
 app.use(express.json());
@@ -49,7 +46,12 @@ app.post("/send-email", async (req, res) => {
   }
 });
 
+/* Optional health check */
+app.get("/", (req, res) => {
+  res.send("Email API is running");
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("Server running on", PORT);
+  console.log("Server running on port", PORT);
 });
